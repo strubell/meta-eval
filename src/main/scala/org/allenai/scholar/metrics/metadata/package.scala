@@ -32,6 +32,12 @@ package object metadata {
   val pstotextAclExtracted = s"$aclExtracted/pstotext"
   val metataggerAclExtracted = s"$aclExtracted/metatagger"
 
+  val ieslPdfToTextHome = s"$root/${config.getString("ieslPdfToText.home")}"
+  val ieslPdfToTextExtracted = s"$aclExtracted/iesl-pdf-to-text"
+
+  val rppHome = s"$root/${config.getString("rpp.home")}"
+  val rppAclExtracted = s"$aclExtracted/rpp"
+
   val yearZero = java.time.Year.of(0)
 
   /** Run a shell process, optionally time it.

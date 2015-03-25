@@ -29,4 +29,8 @@ runMetatagger:
 evalMetatagger:
 	target/universal/stage/bin/meta-eval evalMetatagger
 
+runIeslPdfToText:
+	target/universal/stage/bin/meta-eval runIeslPdfToText
 
+runRPP:
+	target/universal/stage/bin/meta-eval runRPP

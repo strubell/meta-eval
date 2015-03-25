@@ -65,6 +65,23 @@ object Main extends App {
     ).run(aclMetadata, aclCitationEdges, Some(aclIdWhiteList))
   }
 
+  def runIeslPdfToText(): Unit = {
+    def processCmd(input: String, output: String) = s"$ieslPdfToTextHome/bin/run.js --svg -i $input -o $output"
+    val inputs = new File(aclPdfDir).listFiles
+    for (inputFile <- inputs) {
+      val outputFile = s"$ieslPdfToTextExtracted/${inputFile.getName}.xml"
+      val cmd = processCmd(inputFile.getPath, outputFile)
+      println(cmd)
+      runProcess(cmd, cwd = Some(ieslPdfToTextHome))
+    }
+  }
+
+  def runRPP() = {
+    val lexicons = s"file:///home/kate/research/lexicon"
+    val cmd = s"./batchrun.sh $rppHome $lexicons $ieslPdfToTextExtracted $rppAclExtracted"
+    runProcess(cmd, cwd = Some(rppHome))
+  }
+
   val cmds = this.getClass.getDeclaredMethods.map(m => m.getName -> m).toMap
 
   cmds get args(0) match {

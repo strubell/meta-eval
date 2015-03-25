@@ -35,7 +35,8 @@ To run this evaluation tool, the following are needed:
 - Build Grobid with `mvn install` in Grobid's home. This should produce the Grobid jar, for example `eval/grobid/grobid-core/target/grobid-core-0.3.1-SNAPSHOT.one-jar.jar`. Note that the actual Grobid version may be different. 
 - Build Metatagger with `./sbt compile` in Metatagger's home.
 - Build pstotext with `bin/setup` in pstotext's home. 
-- Buidl Meta-Eval with `make stage` in Meta-Eval's home. This will call SBT to produce the necessary binaries in `meta-eval/universal/stage`.
+- Build Meta-Eval with `make stage` in Meta-Eval's home. This will call SBT to produce the necessary binaries in `meta-eval/universal/stage`.
+- Build iesl-pdf-to-text with `npm install`
 
 ### Download and Setting Up Evaluation Data
 
@@ -43,7 +44,7 @@ To run this evaluation tool, the following are needed:
 - Download the [ACL metadata](https://s3-us-west-2.amazonaws.com/ai2-s2/pipeline/source-data/metadata-2014-08-25.json) (about 4.6M) from Amazon S3 to `~/eval/data/acl` folder.
 - Download the [ACL citation graph data](https://s3-us-west-2.amazonaws
 .com/ai2-s2/pipeline/source-data/citation-edges/citation-edges-2014-08-25.txt) from Amazon S3 to `~/eval/data/acl` folder.
-- Create the following folders in `~/eval/data/acl/extracted`: `pstotext`, `metatagger`, `grobid`.
+- Create the following folders in `~/eval/data/acl/extracted`: `pstotext`, `metatagger`, `grobid`, `iesl-pdf-to-text`, `rpp`.
 
 ### Running Meta-Eval
 
