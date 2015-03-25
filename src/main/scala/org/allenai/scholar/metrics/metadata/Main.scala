@@ -77,8 +77,7 @@ object Main extends App {
   }
 
   def runRPP() = {
-    val lexicons = s"file:///home/kate/research/lexicon"
-    val cmd = s"./batchrun.sh $rppHome $lexicons $ieslPdfToTextExtracted $rppAclExtracted"
+    val cmd = s"./batchrun.sh $rppHome $rppLexiconsPath $ieslPdfToTextExtracted $rppAclExtracted"
     runProcess(cmd, cwd = Some(rppHome))
   }
 

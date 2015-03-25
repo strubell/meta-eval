@@ -37,6 +37,7 @@ package object metadata {
 
   val rppHome = s"$root/${config.getString("rpp.home")}"
   val rppAclExtracted = s"$aclExtracted/rpp"
+  val rppLexiconsPath = s"$rppHome/lexicon"
 
   val yearZero = java.time.Year.of(0)
 

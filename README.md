@@ -7,6 +7,7 @@ Currently, two libraries are supported:
 
 - [Grobid](https://github.com/kermitt2/grobid) by Patrice Lopez.
 - [Metatagger](https://github.com/iesl/rexa1-metatagger) by the University of Massachusetts's Information Extraction and Synthesis Laboratory led by Andrew McCallum. This library uses a custom PDF processor called [pstotext](https://github.com/iesl/rexa1-pstotext) which is based on DEC library of the same name.
+- [RPP](https://github.com/iesl/rpp) by IESL
 
 This tool currently supports evaluation using the [ACL Anthology](http://www.aclweb.org/anthology/), which contains about twenty thousand paper PDFs (as of 2014), together with the metadata provided by the the University of Michigan's Computational Linguistics and Information Retrieval group led by Dragomir Radev.
 
@@ -23,6 +24,7 @@ To run this evaluation tool, the following are needed:
 - Mac OS X or Linux. Linux Ubuntu has been tested.
 - Java 8 (due to the use of Java's time library.
 - Scala 2.11 or later.
+- SBT
 - Git.
 - Simple build tool (sbt), version 0.13.7 or later.
 - Maven (for building Grobid). 
@@ -31,12 +33,13 @@ To run this evaluation tool, the following are needed:
 ### Setting Up Software
 
 - Create a directory called `eval`, [for example](https://github.com/allenai/meta-eval/blob/master/src/main/resources/application.conf#L1), in `$HOME` directory. 
-- Git clone the following four repositories: [Grobid](https://github.com/kermitt2/grobid), [Metatagger](https://github.com/iesl/rexa1-metatagger), [pstotext](https://github.com/iesl/rexa1-pstotext), and [Meta-Eval](https://github.com/allenai/meta-eval) in `eval`. 
+- Git clone the following four repositories: [Grobid](https://github.com/kermitt2/grobid), [Metatagger](https://github.com/iesl/rexa1-metatagger), [pstotext](https://github.com/iesl/rexa1-pstotext), [Meta-Eval](https://github.com/allenai/meta-eval), [iesl-pdf-to-text](https://github.com/iesl/iesl-pdf-to-text), [RPP](https://github.com/iesl/rpp) in `eval`.
 - Build Grobid with `mvn install` in Grobid's home. This should produce the Grobid jar, for example `eval/grobid/grobid-core/target/grobid-core-0.3.1-SNAPSHOT.one-jar.jar`. Note that the actual Grobid version may be different. 
 - Build Metatagger with `./sbt compile` in Metatagger's home.
 - Build pstotext with `bin/setup` in pstotext's home. 
 - Build Meta-Eval with `make stage` in Meta-Eval's home. This will call SBT to produce the necessary binaries in `meta-eval/universal/stage`.
 - Build iesl-pdf-to-text with `npm install`
+- Build RPP with `sbt compile`
 
 ### Download and Setting Up Evaluation Data
 
@@ -81,4 +84,12 @@ runMetatagger:
 # Evaluate Metatagger. It is required to run Metatagger first.
 evalMetatagger:
 	target/universal/stage/bin/meta-eval evalMetatagger
+
+# Run iesl-pdf-to-text. This required before running RPP.
+runIeslPdfToText:
+	target/universal/stage/bin/meta-eval runIeslPdfToText
+
+# Run RPP.
+runRPP:
+	target/universal/stage/bin/meta-eval runRPP
 ```
