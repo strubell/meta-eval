@@ -14,12 +14,12 @@ import java.time.Year
   * @param bibs A list of bibs/references in the paper.
   */
 case class CoreMetadata(
-  title: String,
-  authorNames: List[String],
-  publishedYear: Year = yearZero,
-  venue: String = "",
-  bibs: List[CoreMetadata] = List()
-)
+                         title: String,
+                         authorNames: List[String],
+                         publishedYear: Year = yearZero,
+                         venue: String = "",
+                         bibs: List[CoreMetadata] = List()
+                         )
 
 object CoreMetadata {
 
@@ -38,15 +38,15 @@ object CoreMetadata {
       cm.title.takeWhile(_ != ' ')
 
   abstract class Parser(
-      titlePath: String,
-      authorPath: String,
-      lastRelativePath: String,
-      firstRelativePath: String,
-      middleRelativePath: String,
-      bibMainPath: String,
-      bibAuthorPath: String,
-      bibTitlePath: String
-  ) {
+                         titlePath: String,
+                         authorPath: String,
+                         lastRelativePath: String,
+                         firstRelativePath: String,
+                         middleRelativePath: String,
+                         bibMainPath: String,
+                         bibAuthorPath: String,
+                         bibTitlePath: String
+                         ) {
 
     def extractBibYear(bib: Element): Year
 
@@ -135,14 +135,35 @@ object CoreMetadata {
     def extractVenue(bib: Element): String =
       List("conference", "journal", "booktitle")
         .find(vt => !bib.select(vt).isEmpty) match {
-          case Some(v) => bib.extractBibTitle(v)
-          case None => ""
-        }
+        case Some(v) => bib.extractBibTitle(v)
+        case None => ""
+      }
 
     def extractSpecialBib(bib: Element): CoreMetadata =
       CoreMetadata(
         title = bib.extractBibTitle("booktitle"),
         authorNames = extractNames(bib, "authors>author"),
+        venue = "",
+        publishedYear = extractBibYear(bib)
+      )
+  }
+
+  object RppParser extends Parser(
+    titlePath = "header-title",
+    authorPath = "header-author",
+    lastRelativePath = "",
+    firstRelativePath = "",
+    middleRelativePath = "",
+    bibMainPath = "",
+    bibAuthorPath = "",
+    bibTitlePath = ""
+  ) {
+    def extractBibYear(bib: Element): Year = bib.extractYear("date", _.text)
+    def extractVenue(bib: Element): String = ""
+    def extractSpecialBib(bib: Element): CoreMetadata =
+      CoreMetadata(
+        title = bib.extractBibTitle("stuff"),
+        authorNames = extractNames(bib, ""),
         venue = "",
         publishedYear = extractBibYear(bib)
       )
