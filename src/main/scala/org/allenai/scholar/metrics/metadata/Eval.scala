@@ -47,10 +47,14 @@ case class Eval(
     groundTruthBibs: Map[String, Map[String, PaperMetadata]],
     idFilter: String => Boolean
   ): Unit = {
-    val analysis = computeEval(groundTruthMetadata, groundTruthBibs, idFilter)
+    val analysis: Iterable[ErrorAnalysis] = computeEval(groundTruthMetadata, groundTruthBibs, idFilter)
+    for (a <- analysis) {
+      println(a.toString)
+    }
     writeToFile(s"${algoName}-summary.txt") { w =>
       w.println("Metric\tPrecision\tRecall")
       for (ErrorAnalysis(metric, PR(p, r), _) <- analysis) {
+        println("DEBUG: Eval: got: p=" + p.toString + " r=" + r.toString)
         w.println(s"""$metric\t${p.getOrElse("")}\t${r.getOrElse("")}""")
       }
     }

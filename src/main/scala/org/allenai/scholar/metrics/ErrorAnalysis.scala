@@ -9,7 +9,9 @@ case class ErrorAnalysis(
   metricName: String,
   pr: PR,
   details: Iterable[(String, Example[_])]
-)
+) {
+  override def toString: String = s"ErrorAnalysis: $metricName ${pr.toString}"
+}
 
 object ErrorAnalysis {
   def computeMetrics[T](
