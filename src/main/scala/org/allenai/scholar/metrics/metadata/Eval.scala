@@ -23,13 +23,16 @@ case class Eval(
     idFilter: String => Boolean
   ): Iterable[ErrorAnalysis] = {
     println(s"DEBUG: Eval.computeEval for $algoName ....")
-    println(s"DEBUG: idFilter=$idFilter")
     val predictions = for {
       f <- taggedFiles
       id = f.getName.split('.')(0)
       if idFilter(id)
       predicted <- taggedFileParser(f)
     } yield (id, predicted)
+    println(s"DEBUG: Eval.computeEval: predictions size = ${predictions.size}")
+    predictions.foreach {
+      case (id, predicted) => println(s"DEBUG: Eval.computeEval: id=$id predicted=$predicted")
+    }
     val goldMetadata: Map[String, PaperMetadata] = groundTruthMetadata.filterKeys(idFilter)
     println(s"DEBUG: goldMetadata size = ${goldMetadata.size}")
     goldMetadata.foreach {
