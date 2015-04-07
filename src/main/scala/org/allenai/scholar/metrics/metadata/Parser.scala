@@ -141,6 +141,37 @@ object MetataggerParser extends Parser(
   }
 }
 
+object RppParser extends Parser(
+  titlePath = "document>header>title",
+  authorPath = "document>header>authors>author",
+  lastRelativePath = "",
+  firstRelativePath = "",
+  middleRelativePath = "",
+  bibMainPath = "document>references>reference",
+  bibAuthorPath = "authors>person",
+  bibTitlePath = "title"
+) {
+
+  def extractBibYear(bib: Element): Year = bib.extractYear("date", _.text)
+
+  def extractVenue(bib: Element): String =
+    List("journal", "booktitle")
+      .find(vt => !bib.select(vt).isEmpty) match {
+      case Some(v) => bib.extractBibTitle(v)
+      case None => ""
+    }
+
+  def extractSpecialBib(bib: Element): PaperMetadata = {
+    val metadata = PaperMetadata(
+      title = Title(bib.extractBibTitle("booktitle")),
+      authors = extractNames(bib, "authors>person"),
+      venue = Venue(""),
+      year = extractBibYear(bib)
+    )
+    metadata
+  }
+}
+
 object Parser {
 
   import org.allenai.scholar.StringUtils._

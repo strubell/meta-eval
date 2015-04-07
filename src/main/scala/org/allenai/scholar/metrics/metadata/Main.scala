@@ -70,14 +70,25 @@ object Main extends App {
     for (inputFile <- inputs) {
       val outputFile = s"$ieslPdfToTextExtracted/${inputFile.getName}.xml"
       val cmd = processCmd(inputFile.getPath, outputFile)
-      println(cmd)
+      println("--> running: " + cmd)
       runProcess(cmd, cwd = Some(ieslPdfToTextHome))
     }
   }
 
   def runRPP() = {
-    val cmd = s"./batchrun.sh $rppHome $rppLexiconsPath $ieslPdfToTextExtracted $rppExtracted"
+    val cmd = s"./batchrun.sh $rppHome file://$rppLexicons $ieslPdfToTextExtracted $rppExtracted"
     runProcess(cmd, cwd = Some(rppHome))
+  }
+
+  def evalRPP(): Unit = {
+    val filesToEval = new File(rppExtracted).listFiles.map(_.getPath)
+    println("evaluating:")
+    filesToEval.foreach(println)
+//    Eval(
+//      algoName = "RPP",
+//      taggedFiles = new File(rppExtracted).listFiles,
+//      taggedFileParser = RppParser.parseCoreMetadata
+//    ).run(aclMetadata, aclCitationEdges, Some(aclIdWhiteList))
   }
 
   val cmds = this.getClass.getDeclaredMethods.map(m => m.getName -> m).toMap

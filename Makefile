@@ -34,3 +34,6 @@ runIeslPdfToText:
 
 runRPP:
 	target/universal/stage/bin/meta-eval runRPP
+
+evalRPP:
+	target/universal/stage/bin/meta-eval evalRPP

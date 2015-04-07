@@ -30,10 +30,13 @@ object Config {
   val pstotextAclExtracted = s"$aclExtracted/pstotext"
   val metataggerAclExtracted = s"$aclExtracted/metatagger"
 
-  /* iesl-pdf-to-text and rpp */
+  /* iesl-pdf-to-text*/
   val ieslPdfToTextHome = s"$root/${config.getString("ieslPdfToText.home")}"
   val ieslPdfToTextExtracted = s"$aclExtracted/iesl-pdf-to-text"
+
+  /* rpp */
   val rppHome = s"$root/${config.getString("rpp.home")}"
   val rppExtracted = s"$aclExtracted/rpp"
+  val rppLexicons = s"$root/${config.getString("rpp.lexicons")}"
 
 }
