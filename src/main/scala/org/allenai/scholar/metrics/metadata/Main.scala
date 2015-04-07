@@ -84,11 +84,11 @@ object Main extends App {
     val filesToEval = new File(rppExtracted).listFiles.map(_.getPath)
     println("evaluating:")
     filesToEval.foreach(println)
-//    Eval(
-//      algoName = "RPP",
-//      taggedFiles = new File(rppExtracted).listFiles,
-//      taggedFileParser = RppParser.parseCoreMetadata
-//    ).run(aclMetadata, aclCitationEdges, Some(aclIdWhiteList))
+    Eval(
+      algoName = "RPP",
+      taggedFiles = new File(rppExtracted).listFiles,
+      taggedFileParser = RppParser.parseCoreMetadata
+    ).run(aclMetadata, aclCitationEdges, Some(aclIdWhiteList))
   }
 
   val cmds = this.getClass.getDeclaredMethods.map(m => m.getName -> m).toMap
