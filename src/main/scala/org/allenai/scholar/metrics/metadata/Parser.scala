@@ -157,9 +157,9 @@ object RppParser extends Parser(
   def extractVenue(bib: Element): String =
     List("journal", "booktitle")
       .find(vt => !bib.select(vt).isEmpty) match {
-      case Some(v) => bib.extractBibTitle(v)
-      case None => ""
-    }
+        case Some(v) => bib.extractBibTitle(v)
+        case None => ""
+      }
 
   def extractSpecialBib(bib: Element): PaperMetadata = {
     val metadata = PaperMetadata(

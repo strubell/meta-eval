@@ -6,9 +6,9 @@ import org.allenai.scholar._
 import org.allenai.scholar.metrics.PrecisionRecall._
 
 case class ErrorAnalysis(
-  metricName: String,
-  pr: PR,
-  details: Iterable[(String, Example[_])]
+    metricName: String,
+    pr: PR,
+    details: Iterable[(String, Example[_])]
 ) {
   override def toString: String = s"ErrorAnalysis: $metricName ${pr.toString}"
 }

@@ -22,6 +22,7 @@ case class Eval(
     groundTruthBibs: Map[String, Map[String, PaperMetadata]],
     idFilter: String => Boolean
   ): Iterable[ErrorAnalysis] = {
+    println(s"DEBUG: Eval.computeEval for $algoName ....")
     val predictions = for {
       f <- taggedFiles
       id = f.getName.split('.')(0)
@@ -34,6 +35,8 @@ case class Eval(
     val predictedBibs = predictions.toMap.mapValues(_.bibs.toSet)
     val goldBibs = groundTruthBibs.filterKeys(idFilter).mapValues(_.values.toSet)
     val bibliographyMetrics = BibliographyErrorAnalysis.computeMetrics(goldBibs, predictedBibs)
+    println(s"DEBUG: metadataMetrics=${metadataMetrics.toString()}")
+    println(s"DEBUG: bibliographyMetrics=${bibliographyMetrics.toString()}")
     metadataMetrics ++ bibliographyMetrics
   }
 
