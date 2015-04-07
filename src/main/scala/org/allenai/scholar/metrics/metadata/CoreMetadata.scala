@@ -149,21 +149,27 @@ object CoreMetadata {
   }
 
   object RppParser extends Parser(
-    titlePath = "header-title",
-    authorPath = "header-author",
+    titlePath = "document>header>title",
+    authorPath = "document>header>author",
     lastRelativePath = "",
     firstRelativePath = "",
     middleRelativePath = "",
-    bibMainPath = "",
-    bibAuthorPath = "",
-    bibTitlePath = ""
+    bibMainPath = "document>references>reference",
+    bibAuthorPath = "authors>person",
+    bibTitlePath = "title"
   ) {
     def extractBibYear(bib: Element): Year = bib.extractYear("date", _.text)
-    def extractVenue(bib: Element): String = ""
+    def extractVenue(bib: Element): String = {
+      List("journal")
+        .find(vt => !bib.select(vt).isEmpty) match {
+        case Some(v) => bib.extractBibTitle(v)
+        case None => ""
+      }
+    }
     def extractSpecialBib(bib: Element): CoreMetadata =
       CoreMetadata(
-        title = bib.extractBibTitle("stuff"),
-        authorNames = extractNames(bib, ""),
+        title = bib.extractBibTitle("booktitle"),
+        authorNames = extractNames(bib, "authors>person"),
         venue = "",
         publishedYear = extractBibYear(bib)
       )
