@@ -16,6 +16,8 @@ case class Title(text: String) {
     case "" => None
     case _ => Some(this)
   }
+
+  override def toString: String = text
 }
 
 object Title {
