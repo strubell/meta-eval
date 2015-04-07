@@ -1,43 +1,10 @@
 package org.allenai.scholar.metrics
 
-import com.typesafe.config.ConfigFactory
-
 import scala.sys.process.Process
 
-import java.io.{ BufferedWriter, ByteArrayInputStream, File, FileWriter }
+import java.io._
 
 package object metadata {
-  val config = ConfigFactory.load()
-  val root = config.getString("root")
-  val dataHome = s"$root/${config.getString("data.home")}"
-  val aclHome = s"$dataHome/${config.getString("data.acl.home")}"
-  val aclPdfDir = s"$aclHome/${config.getString("data.acl.pdfDirectory")}"
-  val aclMetadata = s"$aclHome/${config.getString("data.acl.metadata")}"
-  val aclCitationEdges = s"$aclHome/${config.getString("data.acl.citationEdges")}"
-  val aclIdWhiteList = s"$aclHome/${config.getString("data.acl.idWhiteList")}"
-
-  val grobidRoot = s"$root/${config.getString("grobid.root")}"
-  val grobidHome = s"$grobidRoot/grobid-home"
-  val grobidJar = new File(s"$grobidRoot/grobid-core/target")
-    .listFiles
-    .filter(_.getName.endsWith("one-jar.jar"))
-    .head
-    .getAbsolutePath
-  val grobidProperties = s"$grobidHome/config/grobid.properties"
-
-  val pstotextHome = s"$root/${config.getString("pstotext.home")}"
-  val metataggerHome = s"$root/${config.getString("metatagger.home")}"
-  val aclExtracted = s"$aclHome/${config.getString("data.acl.extracted")}"
-  val grobidAclExtracted = s"$aclExtracted/grobid"
-  val pstotextAclExtracted = s"$aclExtracted/pstotext"
-  val metataggerAclExtracted = s"$aclExtracted/metatagger"
-
-  val ieslPdfToTextHome = s"$root/${config.getString("ieslPdfToText.home")}"
-  val ieslPdfToTextExtracted = s"$aclExtracted/iesl-pdf-to-text"
-
-  val rppHome = s"$root/${config.getString("rpp.home")}"
-  val rppAclExtracted = s"$aclExtracted/rpp"
-  val rppLexiconsPath = s"${config.getString("rpp.lexicons")}"
 
   val yearZero = java.time.Year.of(0)
 
@@ -76,5 +43,11 @@ package object metadata {
     val bw = new BufferedWriter(new FileWriter(new File(fileName)))
     bw.write(lines.mkString("\n"))
     bw.close()
+  }
+
+  def writeToFile(fileName: String)(write: PrintWriter => Unit) = {
+    val w = new PrintWriter(new FileWriter(new File(fileName)))
+    write(w)
+    w.close()
   }
 }

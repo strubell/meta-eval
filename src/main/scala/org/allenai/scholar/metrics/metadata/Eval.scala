@@ -1,11 +1,11 @@
 package org.allenai.scholar.metrics.metadata
 
-import org.allenai.scholar.metrics.metadata.CoreMetadata._
-import org.allenai.scholar.metrics.metadata.CoreMetadataMatch._
+import java.io.File
+
+import org.allenai.scholar.metrics.{ ErrorAnalysis, PR }
+import org.allenai.scholar.{ Author, MetadataAndBibliography, PaperMetadata }
 
 import scala.io.Source
-
-import java.io.File
 
 /** Eval objects define evaluations of different metadata extraction algorithms.
   * @param algoName The extraction algorithm's name.
@@ -15,73 +15,88 @@ import java.io.File
 case class Eval(
     algoName: String,
     taggedFiles: Array[File],
-    taggedFileParser: File => Option[CoreMetadata]
+    taggedFileParser: File => Option[MetadataAndBibliography]
 ) {
   def computeEval(
-    groundTruthMetadata: Map[String, CoreMetadata],
-    bibs: Map[String, Map[String, CoreMetadata]],
+    groundTruthMetadata: Map[String, PaperMetadata],
+    groundTruthBibs: Map[String, Map[String, PaperMetadata]],
     idFilter: String => Boolean
-  ): Array[CoreMetadataMatch] =
-    for {
+  ): Iterable[ErrorAnalysis] = {
+    val predictions = for {
       f <- taggedFiles
       id = f.getName.split('.')(0)
       if idFilter(id)
-      m <- taggedFileParser(f) match {
-        case Some(parsed) =>
-          groundTruthMetadata get id match {
-            case Some(gt) => Some(matchCoreMetadata(id, parsed, gt, bibs.get(id)))
-            case _ => None
-          }
-        case None => None
-      }
-    } yield m
+      predicted <- taggedFileParser(f)
+    } yield (id, predicted)
+    val goldMetadata = groundTruthMetadata.filterKeys(idFilter)
+    val predictedMetadata = predictions.toMap.mapValues(_.metadata)
+    val metadataMetrics = MetadataErrorAnalysis.computeMetrics(goldMetadata, predictedMetadata)
+    val predictedBibs = predictions.toMap.mapValues(_.bibs.toSet)
+    val goldBibs = groundTruthBibs.filterKeys(idFilter).mapValues(_.values.toSet)
+    val bibliographyMetrics = BibliographyErrorAnalysis.computeMetrics(goldBibs, predictedBibs)
+    metadataMetrics ++ bibliographyMetrics
+  }
 
   /** Run evaluation, print out summary, and save match data to Tableau format.
     * @param groundTruthMetadata map paper ids to ground truth core metadata.
+    * @param groundTruthBibs map of paper ids to a map of "bibKey" to cited core metadata
+    * @param idFilter only keep paper ids matching this filter
     */
   def run(
-    groundTruthMetadata: Map[String, CoreMetadata],
-    bibs: Map[String, Map[String, CoreMetadata]],
+    groundTruthMetadata: Map[String, PaperMetadata],
+    groundTruthBibs: Map[String, Map[String, PaperMetadata]],
     idFilter: String => Boolean
   ): Unit = {
-    val matches = computeEval(groundTruthMetadata, bibs, idFilter)
-    CoreMetadataMatchStats.printSummary(CoreMetadataMatch.stats(matches))
-
-    val evalTsvFile = algoName + ".tab"
-    println(s"Saving the match results to $evalTsvFile in tab separated format ...")
-    val entries = Seq(CoreMetadataMatch.getHeaderRow) ++ matches.map(_.getValueRow(algoName))
-    writeToFile(entries, evalTsvFile)
+    val analysis = computeEval(groundTruthMetadata, groundTruthBibs, idFilter)
+    writeToFile(s"${algoName}-summary.txt") { w =>
+      w.println("Metric\tPrecision\tRecall")
+      for (ErrorAnalysis(metric, PR(p, r), _) <- analysis) {
+        w.println(s"""$metric\t${p.getOrElse("")}\t${r.getOrElse("")}""")
+      }
+    }
+    val detailsDir = new File(s"${algoName}-details")
+    detailsDir.mkdirs()
+    def format(a: Any): String = a match {
+      case a: Author => a.productIterator.map(format).filter(_.size > 0).mkString(" ")
+      case m: PaperMetadata => s"${m.authors.map(_.lastName).mkString(" & ")} ${m.year}"
+      case p: Product =>
+        p.productIterator.map(format).mkString(",")
+      case i: Iterable[_] => i.map(format).mkString(" ")
+      case _ => a.toString
+    }
+    for (ErrorAnalysis(metric, _, examples) <- analysis) {
+      writeToFile(new File(detailsDir, s"$metric.txt").getCanonicalPath) { w =>
+        w.println("id\tPrecision\tRecall\tTruth\tPredicted")
+        for ((id, ex) <- examples) {
+          val truth = ex.trueLabels.map(format).mkString("|")
+          val predictions = ex.predictedLabels.map(format).mkString("|")
+          val PR(p, r) = ex.precisionRecall
+          w.println(s"""$id\t${p.getOrElse("")}\t${r.getOrElse("")}\t$truth\t$predictions""")
+        }
+      }
+    }
   }
 
   def run(
     groundTruthMetadataFile: String,
-    citationEdgesFile: String,
+    groundTruthCitationEdgesFile: String,
     idWhiteListFile: Option[String] = None
   ): Unit = {
-    import org.allenai.scholar.metrics.metadata.PaperMetadata._
-    val groundTruthMetadata = convertToCore(fromJsonLinesFile(groundTruthMetadataFile))
-
-    val edges = for {
-      line <- Source.fromFile(citationEdgesFile).getLines
+    import PaperMetadata._
+    val groundTruthMetadata = fromJsonLinesFile(groundTruthMetadataFile)
+    val citationEdges = for {
+      line <- Source.fromFile(groundTruthCitationEdgesFile).getLines.toIterable
       s = line.split('\t')
       if s.length > 1
-      (citing, citee) = (s(0), s(1))
-      citeeMeta <- groundTruthMetadata.get(citee) match {
-        case Some(cm) => Some((bibKey(cm), cm))
-        case None => None
-      }
     } yield {
-      citing -> citeeMeta
+      (s(0), s(1))
     }
-
-    val bibs = edges.toList
-      .groupBy(_._1) // group by citing paper id
-      .mapValues(_.map(_._2).toMap) // each value is a map from citee's bibKey to its CoreMetadata
+    val bibs = MetadataAndBibliography.edgesToBibKeyMap(citationEdges, groundTruthMetadata)
     idWhiteListFile match {
-      case Some(fn) =>
+      case Some(fn) if new File(fn).exists =>
         val whiteList = Source.fromFile(fn).getLines.toSet
         run(groundTruthMetadata, bibs, whiteList.contains(_))
-      case None => run(groundTruthMetadata, bibs, id => true)
+      case _ => run(groundTruthMetadata, bibs, id => true)
     }
   }
 }
