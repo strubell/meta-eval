@@ -23,6 +23,9 @@ case class Eval(
     idFilter: String => Boolean
   ): Iterable[ErrorAnalysis] = {
     println(s"DEBUG: Eval.computeEval for $algoName ....")
+    println(s"DEBUG: Eval.computeEval: taggedFiles:")
+    taggedFiles.foreach { file => println(s"\tDEBUG: Eval.computeEval: ${file.getPath}")}
+
     val predictions = for {
       f <- taggedFiles
       id = f.getName.split('.')(0)
@@ -30,11 +33,14 @@ case class Eval(
       predicted <- taggedFileParser(f)
     } yield (id, predicted)
 
+
     val filteredFiles = taggedFiles.filter { file =>
       val nameParts = file.getName.split('.')
       assert(nameParts.length > 0)
       val id = nameParts(0)
-      idFilter(id)
+      val doFilter = idFilter(id)
+      println(s"DEBUG: Eval.computeEval: filter file $id ? $doFilter")
+      doFilter
     }
     println(s"DEBUG: Eval.computeEval: filteredFiles size = ${filteredFiles.length}")
     val predictions2 = filteredFiles.map(file => taggedFileParser(file))
