@@ -29,6 +29,12 @@ case class Eval(
       if idFilter(id)
       predicted <- taggedFileParser(f)
     } yield (id, predicted)
+
+    val filteredFiles = taggedFiles.filter(file => idFilter(file.getName.split(".")(0)))
+    println(s"DEBUG: Eval.computeEval: filteredFiles size = ${filteredFiles.length}")
+    val predictions2 = filteredFiles.map(file => taggedFileParser(file))
+    println(s"DEBUG: Eval.computeEval: predictions2 size = ${predictions2.length}")
+
     println(s"DEBUG: Eval.computeEval: predictions size = ${predictions.size}")
     predictions.foreach {
       case (id, predicted) => println(s"DEBUG: Eval.computeEval: id=$id predicted=$predicted")
