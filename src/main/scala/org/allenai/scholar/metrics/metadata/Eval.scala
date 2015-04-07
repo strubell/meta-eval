@@ -30,7 +30,12 @@ case class Eval(
       predicted <- taggedFileParser(f)
     } yield (id, predicted)
 
-    val filteredFiles = taggedFiles.filter(file => idFilter(file.getName.split(".")(0)))
+    val filteredFiles = taggedFiles.filter { file =>
+      val nameParts = file.getName.split('.')
+      assert(nameParts.length > 0)
+      val id = nameParts(0)
+      idFilter(id)
+    }
     println(s"DEBUG: Eval.computeEval: filteredFiles size = ${filteredFiles.length}")
     val predictions2 = filteredFiles.map(file => taggedFileParser(file))
     println(s"DEBUG: Eval.computeEval: predictions2 size = ${predictions2.length}")
