@@ -47,6 +47,7 @@ case class Eval(
     groundTruthBibs: Map[String, Map[String, PaperMetadata]],
     idFilter: String => Boolean
   ): Unit = {
+    println(s"DEBUG: run2() ......")
     val analysis: Iterable[ErrorAnalysis] = computeEval(groundTruthMetadata, groundTruthBibs, idFilter)
     for (a <- analysis) {
       println(a.toString)
@@ -86,7 +87,9 @@ case class Eval(
     groundTruthCitationEdgesFile: String,
     idWhiteListFile: Option[String] = None
   ): Unit = {
+    println(s"DEBUG: run1() ......")
     import PaperMetadata._
+    println(s"DEBUG: idWhiteListFile=$idWhiteListFile")
     val groundTruthMetadata = fromJsonLinesFile(groundTruthMetadataFile)
     val citationEdges = for {
       line <- Source.fromFile(groundTruthCitationEdgesFile).getLines.toIterable
