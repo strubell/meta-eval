@@ -1,0 +1,74 @@
+<document>
+    <header>
+        <title>Some Document</title>
+        <authors>
+            <person>
+            <person-first>Kate</person-first><person-last>Silverstein</person-last>
+            </person>
+        </authors>
+        <institution>UMASS</institution>
+        <date><year>2006</year></date>
+    </header>
+    <references>
+        <reference><authors><person><person-last>Ido Dagan ,</person-last></person>
+            <person><person-first>Oren</person-first> <person-last>Glickman ,</person-last></person>
+            <person><person-first>Bernardo</person-first> <person-last>Magnini .</person-last></person></authors> <date><year>2005 .</year></date> <title>The PASCAL Recognizing Textual Entailment Challenge .</title> <venue><booktitle>Proceedings of the PASCAL Challenges Workshop .</booktitle></venue></reference>
+        <reference><authors><person><person-first>Groenendijk .</person-first> <person-last>Jeroen</person-last></person></authors> <date><year>1999 .</year></date> <title>The logic of interrogation : Clas - sical version .</title> <venue><booktitle>Proceedings of the Ninth Semantics and Linguistics Theory Conference ( SALT IX ) ,</booktitle></venue></reference>
+        <reference><authors><person><person-last>Aria</person-last>
+            <person-last>Haghighi ,</person-last></person>
+            <person><person-first>Andrew</person-first> <person-last>Ng ,</person-last></person>
+            <person><person-first>Christopher</person-first> <person-last>Manning .</person-last></person></authors> <date><year>2005 .</year></date> <title>Robust textual inference via graph matching .</title> <venue><booktitle>Pro - ceedings of Human Language Technology Conference and Conference on Empirical Methods in Natural Language Processing ,</booktitle></venue></reference>
+        <reference><authors><person><person-first>Sanda</person-first> <person-last>Harabagiu</person-last></person>
+            <person><person-first>Andrew</person-first> <person-last>Hickl .</person-last></person></authors> <date><year>2006 .</year></date> <title>Methods for using textual entailment in open - domain question - answering .</title> <venue><booktitle>Proceedings of the Joint International Conference on Computational Linguistics and Annual Meeting of the Association for Computational Linguistics ( COLING - ACL 2006 ) , Sydney , Australia . Sanda Harabagiu , Andrew Hickl , John Lehmann , and Dan Moldovan . 2005 . Experiments with Interactive Question - Answering .</booktitle></venue>
+            <venue><booktitle>Proceedings of the 43rd Annual Meeting of the Association for Computational Linguistics</booktitle></venue></reference>
+        <reference><authors><person><person-last>Sanda Harabagiu ,</person-last></person>
+            <person><person-first>Finley</person-first> <person-last>Lacatusu ,</person-last></person>
+            <person><person-first>Andrew</person-first> <person-last>Hickl .</person-last></person></authors> <date><year>2006 .</year></date> <title>Answering complex questions with random walk models .</title> <venue><booktitle>In 2006 ACM SIGIR Conference on Research and Devel - opment in Information Retrieval</booktitle></venue></reference>
+        <reference><authors><person><person-first>Harabagiu .</person-first> <person-last>Sanda</person-last></person></authors> <date><year>2004 .</year></date> <title>Incremental Topic Representations .</title> <venue><booktitle>Proceedings of the 20th COLING Conference ,</booktitle></venue></reference>
+        <reference><authors><person><person-first>Andrew</person-first> <person-last>Hickl ,</person-last></person>
+            <person><person-first>John</person-first> <person-last>Lehmann ,</person-last></person>
+            <person><person-first>John</person-first> <person-last>Williams ,</person-last></person>
+            <person><person-first>Sanda</person-first> <person-last>Harabagiu .</person-last></person></authors> <date><year>2004 .</year></date>
+            <date><year>2004 ,</year></date> <title>Experiments with Interactive Question - Answering in Complex Scenarios .</title> <venue><booktitle>Proceedings of the Workshop on the Pragmatics of Question Answering at HLT - NAACL</booktitle></venue></reference>
+        <reference><authors><person><person-first>Andrew</person-first> <person-last>Hickl ,</person-last></person>
+            <person><person-first>Patrick</person-first> <person-last>Wang ,</person-last></person>
+            <person><person-first>John</person-first> <person-last>Lehmann ,</person-last></person>
+            <person><person-first>Sanda</person-first> <person-last>Harabagiu .</person-last></person></authors> <date><year>2006 a.</year></date> <title>FERRET : Interactive Question - Answering for Real - World Environments .</title> <venue></venue>
+            <venue><booktitle>Proceed - ings of the Joint International Conference on Computa - tional Linguistics and Annual Meeting of the Association for Computational Linguistics ( COLING - ACL 2006 ) In - teractive Presentations Program ,</booktitle></venue></reference>
+        <reference><authors><person><person-first>Andrew</person-first> <person-last>Hickl ,</person-last></person>
+            <person><person-first>John</person-first> <person-last>Williams ,</person-last></person>
+            <person><person-first>Jeremy</person-first> <person-last>Bensley ,</person-last></person>
+            <person><person-first>Kirk</person-first> <person-last>Roberts ,</person-last></person>
+            <person><person-first>Bryan</person-first> <person-last>Rink ,</person-last></person>
+            <person><person-first>Ying</person-first> <person-last>Shi .</person-last></person></authors> <date><year>2006 b.</year></date> <title>Recognizing Textual Entailment with LCC 's Groundhog System .</title> <venue></venue>
+            <venue><booktitle>Proceed - ings of the Second PASCAL Challenges Workshop , Syd - ney ,</booktitle></venue></reference>
+        <reference><authors><person><person-last>Finley</person-last></person></authors>
+            <authors><person><person-last>Lacatusu ,</person-last></person>
+                <person><person-first>Andrew</person-first> <person-last>Hickl ,</person-last></person>
+                <person><person-first>Kirk</person-first> <person-last>Roberts ,</person-last></person>
+                <person><person-first>Ying</person-first> <person-last>Shi ,</person-last></person>
+                <person><person-first>Jeremy</person-first> <person-last>Bensley ,</person-last></person>
+                <person><person-first>Bryan</person-first> <person-last>Rink ,</person-last></person>
+                <person><person-first>Patrick</person-first> <person-last>Wang ,</person-last></person></authors> <date><year>2006 ) ,</year></date> <title>Multi-Strategy Multi-Document Summarization .</title> <venue><booktitle>Lara Tay - lor . 2006 . LCC 's GISTexter at DUC 2006 :</booktitle></venue>
+            <venue><booktitle>Proceedings of the 2006 Document Understanding Conference</booktitle></venue></reference>
+        <reference><authors><person><person-first>David</person-first> <person-last>Lewis .</person-last></person></authors> <date><year>1988 .</year></date> <title>Relevant Implication .</title> <venue></venue></reference>
+        <reference><authors><person><person-last>Chin -</person-last></person></authors> <date><year>2000 .</year></date> <title>Yew Lin and Eduard Hovy .</title>
+            <title>The auto - mated acquisition of topic signatures for text summariza - tion .</title> <venue><booktitle>Proceedings of the 18th COLING Conference , Saarbr ® ucken ,</booktitle></venue></reference>
+        <reference><authors><person><person-last>Bill</person-last></person></authors>
+            <authors><person><person-last>MacCartney ,</person-last></person>
+                <person><person-first>Trond</person-first> <person-last>Grenager ,</person-last></person></authors>
+            <authors><person><person-last>Daniel</person-last>
+                <person-last>Cer ,</person-last></person>
+                <person><person-first>Christopher</person-first> <person-last>Manning .</person-last></person></authors> <date><year>2006 .</year></date>
+            <date><year>2006 ) ,</year></date> <title>Marie - Catherine de Marn - effe ,</title>
+            <title>Learning to recognize features of valid textual entail - ments .</title> <venue><booktitle>Proceedings of the Joint Human Language Technology Conference and Annual Meeting of the North American</booktitle></venue></reference>
+        <reference><authors><person><person-last>Dan Moldovan ,</person-last></person>
+            <person><person-first>Christine</person-first> <person-last>Clark ,</person-last></person>
+            <person><person-first>Sanda</person-first> <person-last>Harabagiu ,</person-last></person>
+            <person><person-first>Steve</person-first> <person-last>Maiorano .</person-last></person></authors> <date><year>2003 .</year></date>
+            <date><year>-2003 .</year></date> <title>COGEX : A Logic Prover for Question Answering .</title> <venue><booktitle>Proceedings of HLT / NAACL</booktitle></venue></reference>
+        <reference><authors><person><person-first>Srini</person-first> <person-last>Narayanan</person-last></person>
+            <person><person-first>Sanda</person-first> <person-last>Harabagiu .</person-last></person></authors> <date><year>2004 .</year></date>
+            <date><year>-2004 .</year></date> <title>Question An - swering based on Semantic Structures .</title> <venue><booktitle>Proceedings of COLING</booktitle></venue></reference>
+    </references>
+</document>

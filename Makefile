@@ -3,6 +3,7 @@
 
 # Rebuild meta-eval after code change.
 stage:
+	sbt format
 	sbt stage
 
 # Print out the content of meta-eval's current configuration.

@@ -21,6 +21,9 @@ libraryDependencies ++= Seq(
 
 libraryDependencies += "org.jsoup" % "jsoup" % "1.8.1"
 
+libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test"
+
+
 dependencyOverrides ++= Set(
   "com.typesafe" % "config" % "1.2.1"
 )

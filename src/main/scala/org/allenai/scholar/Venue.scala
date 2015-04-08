@@ -12,6 +12,7 @@ case class Venue(name: String) {
     case "" => None
     case _ => Some(this)
   }
+  override def toString = name
 }
 
 object Venue {

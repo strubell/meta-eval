@@ -69,9 +69,11 @@ object Main extends App {
     val inputs = new File(aclPdfDir).listFiles
     for (inputFile <- inputs) {
       val outputFile = s"$ieslPdfToTextExtracted/${inputFile.getName}.xml"
-      val cmd = processCmd(inputFile.getPath, outputFile)
-      println("--> running: " + cmd)
-      runProcess(cmd, cwd = Some(ieslPdfToTextHome))
+      if (!new File(outputFile).exists) {
+        val cmd = processCmd(inputFile.getPath, outputFile)
+        println("--> running: " + cmd)
+        runProcess(cmd, cwd = Some(ieslPdfToTextHome))
+      }
     }
   }
 
@@ -81,9 +83,6 @@ object Main extends App {
   }
 
   def evalRPP(): Unit = {
-    val filesToEval = new File(rppExtracted).listFiles.map(_.getPath)
-    println("evaluating:")
-    filesToEval.foreach(println)
     Eval(
       algoName = "RPP",
       taggedFiles = new File(rppExtracted).listFiles,

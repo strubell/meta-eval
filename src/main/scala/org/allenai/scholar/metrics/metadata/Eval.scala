@@ -22,9 +22,11 @@ case class Eval(
     groundTruthBibs: Map[String, Map[String, PaperMetadata]],
     idFilter: String => Boolean
   ): Iterable[ErrorAnalysis] = {
-    println(s"DEBUG: Eval.computeEval for $algoName ....")
-    println(s"DEBUG: Eval.computeEval: taggedFiles:")
-    taggedFiles.foreach { file => println(s"\tDEBUG: Eval.computeEval: ${file.getPath}")}
+
+    val TAG = "DEBUG: Eval.computeEval: "
+
+    //    println(s"DEBUG: Eval.computeEval for $algoName ....")
+    //    println(s"$TAG num tagged files: ${taggedFiles.length}")
 
     val predictions = for {
       f <- taggedFiles
@@ -33,35 +35,24 @@ case class Eval(
       predicted <- taggedFileParser(f)
     } yield (id, predicted)
 
+    println(s"\n$TAG predictions:")
+    for (p <- predictions) println(p)
+    println("")
 
-    val filteredFiles = taggedFiles.filter { file =>
-      val nameParts = file.getName.split('.')
-      assert(nameParts.length > 0)
-      val id = nameParts(0)
-      val doFilter = idFilter(id)
-      println(s"DEBUG: Eval.computeEval: filter file $id ? $doFilter")
-      doFilter
-    }
-    println(s"DEBUG: Eval.computeEval: filteredFiles size = ${filteredFiles.length}")
-    val predictions2 = filteredFiles.map(file => taggedFileParser(file))
-    println(s"DEBUG: Eval.computeEval: predictions2 size = ${predictions2.length}")
-
-    println(s"DEBUG: Eval.computeEval: predictions size = ${predictions.size}")
-    predictions.foreach {
-      case (id, predicted) => println(s"DEBUG: Eval.computeEval: id=$id predicted=$predicted")
-    }
     val goldMetadata: Map[String, PaperMetadata] = groundTruthMetadata.filterKeys(idFilter)
-    println(s"DEBUG: goldMetadata size = ${goldMetadata.size}")
-    goldMetadata.foreach {
-      case (s, pm) => println(s"DEBUG: Eval.computeEval: goldMetadata entry: $s ${pm.toString}")
-    }
+    //    println(s"DEBUG: goldMetadata size = ${goldMetadata.size}")
+    //    goldMetadata.foreach {
+    //      case (s, pm) => println(s"$TAG goldMetadata entry: $s ${pm.toString}")
+    //    }
     val predictedMetadata = predictions.toMap.mapValues(_.metadata)
     val metadataMetrics = MetadataErrorAnalysis.computeMetrics(goldMetadata, predictedMetadata)
     val predictedBibs = predictions.toMap.mapValues(_.bibs.toSet)
     val goldBibs = groundTruthBibs.filterKeys(idFilter).mapValues(_.values.toSet)
     val bibliographyMetrics = BibliographyErrorAnalysis.computeMetrics(goldBibs, predictedBibs)
-    println(s"DEBUG: metadataMetrics=${metadataMetrics.toString()}")
-    println(s"DEBUG: bibliographyMetrics=${bibliographyMetrics.toString()}")
+
+    //    println(s"$TAG metadataMetrics=${metadataMetrics.toString()}")
+    //    println(s"$TAG bibliographyMetrics=${bibliographyMetrics.toString()}")
+
     metadataMetrics ++ bibliographyMetrics
   }
 
@@ -75,16 +66,17 @@ case class Eval(
     groundTruthBibs: Map[String, Map[String, PaperMetadata]],
     idFilter: String => Boolean
   ): Unit = {
-    println(s"DEBUG: run2() ......")
+    //    println(s"DEBUG: run2() ......")
+    def computeF1(p: Double, r: Double): Double = if (r + p == 0.0) -1.0 else (2.0 * r * p) / (r + p)
     val analysis: Iterable[ErrorAnalysis] = computeEval(groundTruthMetadata, groundTruthBibs, idFilter)
     for (a <- analysis) {
       println(a.toString)
     }
     writeToFile(s"${algoName}-summary.txt") { w =>
-      w.println("Metric\tPrecision\tRecall")
+      w.println("Metric\tPrecision\tRecall\tF1")
       for (ErrorAnalysis(metric, PR(p, r), _) <- analysis) {
-        println("DEBUG: Eval: got: p=" + p.toString + " r=" + r.toString)
-        w.println(s"""$metric\t${p.getOrElse("")}\t${r.getOrElse("")}""")
+        val f1 = computeF1(p.getOrElse(0.0), r.getOrElse(0.0))
+        w.println(s"$metric\t${p.getOrElse("")}\t${r.getOrElse("")}\t${if (f1 >= 0.0) f1 else ""}")
       }
     }
     val detailsDir = new File(s"${algoName}-details")
@@ -99,12 +91,13 @@ case class Eval(
     }
     for (ErrorAnalysis(metric, _, examples) <- analysis) {
       writeToFile(new File(detailsDir, s"$metric.txt").getCanonicalPath) { w =>
-        w.println("id\tPrecision\tRecall\tTruth\tPredicted")
+        w.println("id\tPrecision\tRecall\tF1\tTruth\tPredicted")
         for ((id, ex) <- examples) {
           val truth = ex.trueLabels.map(format).mkString("|")
           val predictions = ex.predictedLabels.map(format).mkString("|")
           val PR(p, r) = ex.precisionRecall
-          w.println(s"""$id\t${p.getOrElse("")}\t${r.getOrElse("")}\t$truth\t$predictions""")
+          val f1 = computeF1(p.getOrElse(0.0), r.getOrElse(0.0))
+          w.println(s"$id\t${p.getOrElse("")}\t${r.getOrElse("")}\t${if (f1 >= 0.0) f1 else ""}\t$truth\t$predictions")
         }
       }
     }
@@ -115,10 +108,8 @@ case class Eval(
     groundTruthCitationEdgesFile: String,
     idWhiteListFile: Option[String] = None
   ): Unit = {
-    println(s"DEBUG: run1() ......")
     import PaperMetadata._
-    println(s"DEBUG: idWhiteListFile=$idWhiteListFile")
-    val groundTruthMetadata = fromJsonLinesFile(groundTruthMetadataFile)
+    val groundTruthMetadata: Map[String, PaperMetadata] = fromJsonLinesFile(groundTruthMetadataFile)
     val citationEdges = for {
       line <- Source.fromFile(groundTruthCitationEdgesFile).getLines.toIterable
       s = line.split('\t')
@@ -128,10 +119,30 @@ case class Eval(
     }
     val bibs = MetadataAndBibliography.edgesToBibKeyMap(citationEdges, groundTruthMetadata)
     idWhiteListFile match {
-      case Some(fn) if new File(fn).exists =>
-        val whiteList = Source.fromFile(fn).getLines.toSet
-        run(groundTruthMetadata, bibs, whiteList.contains(_))
-      case _ => run(groundTruthMetadata, bibs, id => true)
+      case Some(fname) =>
+        assert(new File(fname).exists, s"id-whitelist $fname does not exist")
+        val whitelist = Source.fromFile(fname).getLines().toSet
+        val taggedFilesFiltered = taggedFiles.filter { filename =>
+          val id = filename.getName.split('.')(0)
+          whitelist.contains(id)
+        }
+        run(groundTruthMetadata, bibs, id => true)
+      case None => println("i dont even care")
     }
+
+    //    idWhiteListFile match {
+    //      case Some(f) =>
+    //        assert(new File(f).exists, s"id-whitelist file $idWhiteListFile does not exist")
+    //        val whitelist = Source.fromFile(f).getLines()
+    //        val filterFxn = (fname: String) => whitelist.contains(fname)
+    //        run(groundTruthMetadata, bibs, filterFxn)
+    //      case _ => println(s"no id-whitelist; wont run it for now")
+    //    }
+    //    idWhiteListFile match {
+    //      case Some(fn) if new File(fn).exists =>
+    //        val whiteList = Source.fromFile(fn).getLines.toSet
+    //        run(groundTruthMetadata, bibs, whiteList.contains(_))
+    //      case _ => run(groundTruthMetadata, bibs, id => true)
+    //    }
   }
 }

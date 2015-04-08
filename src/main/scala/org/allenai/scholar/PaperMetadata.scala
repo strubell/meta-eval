@@ -14,7 +14,7 @@ case class PaperMetadata(
     year: Year,
     authors: Seq[Author]
 ) {
-  override def toString: String = s"(PaperMetadata title=${title.toString} venue,year,authors)"
+  override def toString: String = s"(PaperMetadata title=${title.toString} venue=${venue.toString} authors=${authors.map(_.toString).mkString(",")} year=${year.toString})"
 }
 
 object PaperMetadata {

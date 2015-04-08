@@ -39,12 +39,16 @@ abstract class Parser(
       val last = a.extractName(lastRelativePath)
       val first = a.extractName(firstRelativePath)
       val middle = a.extractName(middleRelativePath)
+      //      println(s"extractNames: got: first=$first middle=$middle last=$last")
       Author(first, if (middle.size > 0) List(middle) else List(), last)
     }).map(_.ifDefined).flatten.toList
 
-  private def extractBibs(doc: Document): Seq[PaperMetadata] =
-    doc.select(bibMainPath).map(bib =>
-      bib.extractBibTitle(bibTitlePath) match {
+  private def extractBibs(doc: Document): Seq[PaperMetadata] = {
+    val main = doc.select(bibMainPath)
+    main.map { bib =>
+      val titleOpt = bib.extractBibTitle(bibTitlePath)
+      //      println("extractBibs: got title: " + titleOpt.toString)
+      titleOpt match {
         case title if title.nonEmpty =>
           PaperMetadata(
             title = Title(title),
@@ -53,7 +57,22 @@ abstract class Parser(
             year = extractBibYear(bib)
           )
         case _ => extractSpecialBib(bib)
-      }).toList
+      }
+    }
+  }
+
+  //  private def extractBibs(doc: Document): Seq[PaperMetadata] =
+  //    doc.select(bibMainPath).map(bib =>
+  //      bib.extractBibTitle(bibTitlePath) match {
+  //        case title if title.nonEmpty =>
+  //          PaperMetadata(
+  //            title = Title(title),
+  //            authors = extractNames(bib, bibAuthorPath),
+  //            venue = Venue(extractVenue(bib)),
+  //            year = extractBibYear(bib)
+  //          )
+  //        case _ => extractSpecialBib(bib)
+  //      }).toList
 
   def parseCoreMetadata(file: File): Option[MetadataAndBibliography] = try {
     val xmlString = Source.fromFile(file, "UTF-8").getLines().mkString("\n")
@@ -143,11 +162,11 @@ object MetataggerParser extends Parser(
 
 object RppParser extends Parser(
   titlePath = "document>header>title",
-  authorPath = "document>header>authors>author",
-  lastRelativePath = "",
-  firstRelativePath = "",
-  middleRelativePath = "",
-  bibMainPath = "document>references>reference",
+  authorPath = "document>header>authors>person",
+  lastRelativePath = "person-last",
+  firstRelativePath = "person-first",
+  middleRelativePath = "person-middle",
+  bibMainPath = "references>reference",
   bibAuthorPath = "authors>person",
   bibTitlePath = "title"
 ) {
@@ -155,9 +174,11 @@ object RppParser extends Parser(
   def extractBibYear(bib: Element): Year = bib.extractYear("date", _.text)
 
   def extractVenue(bib: Element): String =
-    List("journal", "booktitle")
+    List("journal", "booktitle", "institution")
       .find(vt => !bib.select(vt).isEmpty) match {
-        case Some(v) => bib.extractBibTitle(v)
+        case Some(v) =>
+          println("RppParser: extractVenue: vt = " + v.toString)
+          bib.extractBibTitle(v)
         case None => ""
       }
 
@@ -170,6 +191,29 @@ object RppParser extends Parser(
     )
     metadata
   }
+
+  /*
+    protected def extractNames(e: Element, authorPath: String, initial: Boolean = false) =
+    e.select(authorPath).map(a => {
+      val last = a.extractName(lastRelativePath)
+      val first = a.extractName(firstRelativePath)
+      val middle = a.extractName(middleRelativePath)
+      Author(first, if (middle.size > 0) List(middle) else List(), last)
+    }).map(_.ifDefined).flatten.toList
+
+  private def extractBibs(doc: Document): Seq[PaperMetadata] =
+    doc.select(bibMainPath).map(bib =>
+      bib.extractBibTitle(bibTitlePath) match {
+        case title if title.nonEmpty =>
+          PaperMetadata(
+            title = Title(title),
+            authors = extractNames(bib, bibAuthorPath),
+            venue = Venue(extractVenue(bib)),
+            year = extractBibYear(bib)
+          )
+        case _ => extractSpecialBib(bib)
+      }).toList
+   */
 }
 
 object Parser {
@@ -189,18 +233,26 @@ object Parser {
 
     import ElementsImplicit._
 
-    def extract(path: String): String = e.select(path).headOption match {
-      case Some(v) => v.text
-      case None => ""
+    def extract(path: String): String = {
+      val thing = e.select(path)
+      val result = thing.headOption match {
+        case Some(v) => v.text
+        case None => ""
+      }
+      //      println("extract: got result: " + result)
+      result
     }
 
-    def extractName(namePath: String): String =
-      extract(namePath).trimNonAlphabetic()
+    def extractName(namePath: String): String = extract(namePath).trimNonAlphabetic()
 
     def extractTitle(path: String): String = extract(path)
 
-    def extractBibTitle(path: String): String =
-      e.extract(path).trimChars(",.")
+    def extractBibTitle(path: String): String = {
+      //      println("extractBibTitle: path = " + path)
+      val result = e.extract(path).trimChars(",.")
+      println("extractBibTitle: result = " + result)
+      result
+    }
 
     def extractYear(path: String, get: Element => String): Year =
       e.select(path).headOption match {
