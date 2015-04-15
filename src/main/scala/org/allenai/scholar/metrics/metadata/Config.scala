@@ -39,4 +39,5 @@ object Config {
   val rppExtracted = s"$aclExtracted/rpp"
   val rppLexicons = s"$root/${config.getString("rpp.lexicons")}"
 
+  val verboseLabelFormat = config.getBoolean("verboseLabelFormat")
 }

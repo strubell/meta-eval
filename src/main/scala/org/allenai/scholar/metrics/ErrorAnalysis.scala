@@ -1,8 +1,5 @@
 package org.allenai.scholar.metrics
 
-import java.time.Year
-
-import org.allenai.scholar._
 import org.allenai.scholar.metrics.PrecisionRecall._
 
 case class ErrorAnalysis(
@@ -15,14 +12,14 @@ case class ErrorAnalysis(
 
 object ErrorAnalysis {
   def computeMetrics[T](
-    truth: Map[String, T],
+    truth: Seq[(String, T)],
     predicted: Map[String, T],
     metrics: (String, T => Iterable[_])*
   ) = {
 
     val examples: Iterable[(String, (String, Example[_]))] =
       for {
-        (id, trueData) <- truth.toList
+        (id, trueData) <- truth
         predictedData = predicted.get(id)
         (metric, extract) <- metrics
       } yield {
