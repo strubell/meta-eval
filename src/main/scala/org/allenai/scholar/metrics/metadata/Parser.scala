@@ -265,6 +265,7 @@ object Parser {
       val result = e.extract(path).trimChars(",.")
       println("extractBibTitle: result = " + result)
       result
+
     }
 
     def extractYear(path: String, get: Element => String): Year =
