@@ -48,7 +48,6 @@ abstract class Parser(
       Author(first, if (middle.size > 0) List(middle) else List(), last)
     }).map(_.ifDefined).flatten.toList
 
-
   private def extractBibs(doc: Document): Seq[PaperMetadata] = {
     val main = doc.select(bibMainPath)
     main.map { bib =>
@@ -195,7 +194,7 @@ object GrobidParser extends Parser(
 object RppParser extends Parser(
   titlePath = "document>header>title",
   venuePath = "",
-  yearPath = "",
+  yearPath = "date>year",
   authorPath = "document>header>authors>person",
   lastRelativePath = "person-last",
   firstRelativePath = "person-first",
@@ -204,8 +203,8 @@ object RppParser extends Parser(
   bibAuthorPath = "authors>person",
   bibTitlePath = "title"
 ) {
-  // TODO/NotYetImplemented
-  override def extractHeaderYear(elmt: Element): Year = yearZero
+
+  override def extractHeaderYear(elmt: Element): Year = elmt.extractYear("date", _.text)
 
   def extractBibYear(bib: Element): Year = bib.extractYear("date", _.text)
 
@@ -260,13 +259,7 @@ object Parser {
 
     def extractTitle(path: String): String = extract(path)
 
-    def extractBibTitle(path: String): String = {
-      //      println("extractBibTitle: path = " + path)
-      val result = e.extract(path).trimChars(",.")
-      println("extractBibTitle: result = " + result)
-      result
-
-    }
+    def extractBibTitle(path: String): String = e.extract(path).trimChars(",.")
 
     def extractYear(path: String, get: Element => String): Year =
       e.select(path).headOption match {

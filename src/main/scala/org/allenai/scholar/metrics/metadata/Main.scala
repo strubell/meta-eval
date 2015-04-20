@@ -65,14 +65,13 @@ object Main extends App {
   }
 
   def runIeslPdfToText(): Unit = {
-    def processCmd(input: String, output: String) = s"$ieslPdfToTextHome/bin/run.js --svg -i $input -o $output"
+    def processCmd(input: String, output: String) = s"$ieslPdfToTextHome/bin/run.js --svg -i $input -o $output" //$ieslPdfToTextHome/bin/run.js --svg -i $input -o $output"
     val inputs = new File(aclPdfDir).listFiles
-    for (inputFile <- inputs) {
-      val outputFile = s"$ieslPdfToTextExtracted/${inputFile.getName}.xml"
-      if (!new File(outputFile).exists) {
-        val cmd = processCmd(inputFile.getPath, outputFile)
-        println("--> running: " + cmd)
-        runProcess(cmd, cwd = Some(ieslPdfToTextHome))
+    val startTime = System.currentTimeMillis()
+    inputs.foreach { input =>
+      val output = s"$ieslPdfToTextExtracted/${input.getName}.xml"
+      if (!new File(output).exists) {
+        runProcess(processCmd(input.getPath, output), cwd = Some(ieslPdfToTextHome), time = true)
       }
     }
   }

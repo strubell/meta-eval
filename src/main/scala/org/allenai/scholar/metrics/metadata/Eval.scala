@@ -13,15 +13,15 @@ import scala.io.Source
   * @param taggedFileParser Function that parses an extracted file to produce core metadata.
   */
 case class Eval(
-                 algoName: String,
-                 taggedFiles: Array[File],
-                 taggedFileParser: File => Option[MetadataAndBibliography]
-                 ) {
+    algoName: String,
+    taggedFiles: Array[File],
+    taggedFileParser: File => Option[MetadataAndBibliography]
+) {
   def computeEval(
-                   groundTruthMetadata: Map[String, PaperMetadata],
-                   groundTruthBibs: Map[String, Map[String, PaperMetadata]],
-                   idFilter: String => Boolean
-                   ): Iterable[ErrorAnalysis] = {
+    groundTruthMetadata: Map[String, PaperMetadata],
+    groundTruthBibs: Map[String, Map[String, PaperMetadata]],
+    idFilter: String => Boolean
+  ): Iterable[ErrorAnalysis] = {
     val predictions = for {
       f <- taggedFiles
       id = f.getName.split('.')(0)
@@ -43,10 +43,10 @@ case class Eval(
     * @param idFilter only keep paper ids matching this filter
     */
   def run(
-           groundTruthMetadata: Map[String, PaperMetadata],
-           groundTruthBibs: Map[String, Map[String, PaperMetadata]],
-           idFilter: String => Boolean
-           ): Unit = {
+    groundTruthMetadata: Map[String, PaperMetadata],
+    groundTruthBibs: Map[String, Map[String, PaperMetadata]],
+    idFilter: String => Boolean
+  ): Unit = {
     def computeF1(precision: Option[Double], recall: Option[Double]) = (precision, recall) match {
       case (Some(_), Some(0)) | (Some(0), Some(_)) => Some(0.0)
       case (Some(p), Some(r)) => Some((2.0 * r * p) / (r + p))
@@ -94,10 +94,10 @@ case class Eval(
   }
 
   def run(
-           groundTruthMetadataFile: String,
-           groundTruthCitationEdgesFile: String,
-           idWhiteListFile: Option[String] = None
-           ): Unit = {
+    groundTruthMetadataFile: String,
+    groundTruthCitationEdgesFile: String,
+    idWhiteListFile: Option[String] = None
+  ): Unit = {
     import PaperMetadata._
     val groundTruthMetadata = fromJsonLinesFile(groundTruthMetadataFile)
     val citationEdges = for {
@@ -105,8 +105,8 @@ case class Eval(
       s = line.split('\t')
       if s.length > 1
     } yield {
-        (s(0), s(1))
-      }
+      (s(0), s(1))
+    }
     var bibs = MetadataAndBibliography.edgesToBibKeyMap(citationEdges, groundTruthMetadata)
     idWhiteListFile match {
       case Some(fn) if new File(fn).exists =>
