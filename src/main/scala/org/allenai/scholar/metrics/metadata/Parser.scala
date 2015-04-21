@@ -80,7 +80,12 @@ abstract class Parser(
   //      }).toList
 
   def parseCoreMetadata(file: File): Option[MetadataAndBibliography] = try {
-    val xmlString = Source.fromFile(file, "UTF-8").getLines().mkString("\n")
+    var xmlString: String = ""
+    try {
+      xmlString = Source.fromFile(file, "UTF-8").getLines().mkString("\n")
+    } catch {
+      case e: Exception => println(s"Exception parsing file: ${file.getAbsolutePath}")
+    }
     Some(parseCoreMetadataString(xmlString))
   } catch {
     case e: Exception =>
