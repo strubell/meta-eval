@@ -19,10 +19,13 @@ object Main extends App {
   }
 
   def evalGrobid(): Unit = {
+    import org.allenai.scholar.MetadataAndBibliography
+    //taggedFileParser: File => Option[MetadataAndBibliography]
+    val tfp: File => Option[MetadataAndBibliography] = GrobidParser.parseCoreMetadata
     Eval(
       algoName = "Grobid",
       taggedFiles = new File(grobidAclExtracted).listFiles,
-      taggedFileParser = GrobidParser.parseCoreMetadata
+      taggedFileParser = tfp
     ).run(aclMetadata, aclCitationEdges, Some(aclIdWhiteList))
   }
 
