@@ -26,7 +26,7 @@ case class Author(firstName: String, middleNames: Seq[String], lastName: String)
       Some(this)
     }
 
-  override def toString = s"$firstName ${middleNames.mkString(" ")} $lastName"
+  //  override def toString = s"$firstName ${middleNames.mkString(" ")} $lastName"
 }
 
 object Author {

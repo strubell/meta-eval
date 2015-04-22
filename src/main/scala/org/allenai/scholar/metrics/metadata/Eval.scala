@@ -57,7 +57,7 @@ case class Eval(
       w.println("Metric\tPrecision\tRecall\tF1")
       for (ErrorAnalysis(metric, PR(p, r), _) <- analysis) {
         val f1 = computeF1(p, r)
-        w.println(s"$metric\t${p.getOrElse("")}\t${r.getOrElse("")}\t${f1.getOrElse("")}")
+        w.println(s"$metric\t${p.getOrElse("-1")}\t${r.getOrElse("-1")}\t${f1.getOrElse("-1")}")
       }
     }
     val detailsDir = new File(s"${algoName}-details")
@@ -77,7 +77,9 @@ case class Eval(
       }
     for (ErrorAnalysis(metric, _, examples) <- analysis) {
       writeToFile(new File(detailsDir, s"$metric.txt").getCanonicalPath) { w =>
-        w.println("id\tPrecision\tRecall\tF1\tFalsePositives\tFalseNegatives\tTruth\tPredicted")
+        //        w.println("id\tPrecision\tRecall\tF1\tFalsePositives\tFalseNegatives\tTruth\tPredicted")
+        w.println("id,Precision,Recall,F1,FalsePositives,FalseNegatives,Truth,Predicted")
+
         for ((id, ex) <- examples) {
           val truth = ex.trueLabels.map(format).mkString("|")
           val predictions = ex.predictedLabels.map(format).mkString("|")
@@ -85,8 +87,8 @@ case class Eval(
           val falseNegatives = (ex.trueLabels.toSet -- ex.predictedLabels).map(format).mkString("|")
           val PR(p, r) = ex.precisionRecall
           val f1 = computeF1(p, r)
-          val report = Seq(id, p.getOrElse(""), r.getOrElse(""), f1.getOrElse(""), falsePositives,
-            falseNegatives, truth, predictions).mkString("\t")
+          val report = Seq(id, p.getOrElse("-1"), r.getOrElse("-1"), f1.getOrElse("-1"), falsePositives,
+            falseNegatives, truth, predictions).mkString(",")
           w.println(report)
         }
       }
