@@ -113,37 +113,6 @@ abstract class Parser(
   }
 }
 
-object GrobidParser extends Parser(
-  titlePath = "teiHeader>fileDesc>titleStmt>title",
-  venuePath = "teiHeader>fileDesc>sourceDesc>biblStruct>monogr>title",
-  yearPath = "teiHeader>fileDesc>sourceDesc>biblStruct>monogr>imprint",
-  authorPath = "teiHeader>fileDesc>sourceDesc>biblStruct>analytic>author",
-  lastRelativePath = "persName>surname",
-  firstRelativePath = "persName>forename[type=first]",
-  middleRelativePath = "persName>forename[type=middle]",
-  bibMainPath = "listBibl>biblStruct",
-  bibAuthorPath = "analytic>author",
-  bibTitlePath = "analytic>title[type=main]"
-) {
-
-  override def extractBibYear(bib: Element): Year =
-    bib.extractYear("monogr>imprint>date[type=published]", _.attr("when"))
-
-  override def extractHeaderYear(elmt: Element): Year = elmt.extractYear(
-    "teiHeader>fileDesc>sourceDesc>biblStruct>monogr>imprint>date[type=published]", _.attr("when")
-  )
-
-  override def extractVenue(bib: Element): String = bib.extractBibTitle("monogr>title")
-
-  override def extractSpecialBib(bib: Element): PaperMetadata =
-    PaperMetadata(
-      title = Title(extractVenue(bib)), // venue becomes title for PhD theses
-      authors = extractNames(bib, "monogr>author"),
-      venue = Venue(""),
-      year = extractBibYear(bib)
-    )
-}
-
 object MetataggerParser extends Parser(
   titlePath = "document>content>headers>title",
   venuePath = "???",

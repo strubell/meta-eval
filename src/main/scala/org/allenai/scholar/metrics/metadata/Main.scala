@@ -19,14 +19,14 @@ object Main extends App {
   }
 
   def evalGrobid(): Unit = {
-    import org.allenai.scholar.MetadataAndBibliography
-    //taggedFileParser: File => Option[MetadataAndBibliography]
-    val tfp: File => Option[MetadataAndBibliography] = GrobidParser.parseCoreMetadata
-    Eval(
+    Eval.run(
       algoName = "Grobid",
-      taggedFiles = new File(grobidAclExtracted).listFiles,
-      taggedFileParser = tfp
-    ).run(aclMetadata, aclCitationEdges, Some(aclIdWhiteList))
+      parser = GrobidParser.extractMetadataAndBib,
+      extractedDir = new File(grobidAclExtracted),
+      groundTruthMetadataFile = aclMetadata,
+      groundTruthCitationEdgesFile = aclCitationEdges,
+      idWhiteListFile = Some(aclIdWhiteList)
+    )
   }
 
   def runPsToText(): Unit = {
@@ -60,11 +60,14 @@ object Main extends App {
   }
 
   def evalMetatagger(): Unit = {
-    Eval(
-      algoName = "Metatagger",
-      taggedFiles = new File(metataggerAclExtracted).listFiles,
-      taggedFileParser = MetataggerParser.parseCoreMetadata
-    ).run(aclMetadata, aclCitationEdges, Some(aclIdWhiteList))
+    Eval.run(
+      algoName = "Metagagger",
+      parser = MetataggerParser.parseCoreMetadataString,
+      extractedDir = new File(metataggerAclExtracted),
+      groundTruthMetadataFile = aclMetadata,
+      groundTruthCitationEdgesFile = aclCitationEdges,
+      idWhiteListFile = Some(aclIdWhiteList)
+    )
   }
 
   def runIeslPdfToText(): Unit = {
@@ -84,20 +87,20 @@ object Main extends App {
     runProcess(cmd, cwd = Some(rppHome))
   }
 
-  def evalRPP(): Unit = {
-    Eval(
-      algoName = "RPP",
-      taggedFiles = new File(rppExtracted).listFiles,
-      taggedFileParser = RppParser.parseCoreMetadata
-    ).run(aclMetadata, aclCitationEdges, Some(aclIdWhiteList))
-  }
-
-  val cmds = this.getClass.getDeclaredMethods.map(m => m.getName -> m).toMap
-
-  cmds get args(0) match {
-    case Some(m) =>
-      println(s"Invoking ${m.getName}")
-      m.invoke(this)
-    case _ => println(s"Unrecognized cmd: ${args(0)}")
-  }
+//  def evalRPP(): Unit = {
+//    Eval(
+//      algoName = "RPP",
+//      taggedFiles = new File(rppExtracted).listFiles,
+//      taggedFileParser = RppParser.parseCoreMetadata
+//    ).run(aclMetadata, aclCitationEdges, Some(aclIdWhiteList))
+//  }
+//
+//  val cmds = this.getClass.getDeclaredMethods.map(m => m.getName -> m).toMap
+//
+//  cmds get args(0) match {
+//    case Some(m) =>
+//      println(s"Invoking ${m.getName}")
+//      m.invoke(this)
+//    case _ => println(s"Unrecognized cmd: ${args(0)}")
+//  }
 }
