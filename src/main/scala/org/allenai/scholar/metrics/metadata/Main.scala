@@ -84,11 +84,14 @@ object Main extends App {
 
   def runRPP() = {
     val cmd = s"./batchrun.sh $rppHome file://$rppLexicons $ieslPdfToTextExtracted $rppExtracted"
-    println(s"Running: $cmd")
     runProcess(cmd, cwd = Some(rppHome))
   }
 
   def evalRPP(): Unit = {
+    println(s"Running RPP on dir: $rppExtracted")
+    println(s"Using metadata: $aclMetadata")
+    println(s"Using edges: $aclCitationEdges")
+    println(s"Using whitelist: $aclIdWhiteList")
     Eval.run(
       algoName = "RPP",
       parser = RppParser.parseCoreMetadataString,
