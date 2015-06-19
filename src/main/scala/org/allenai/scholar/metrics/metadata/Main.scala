@@ -88,7 +88,7 @@ object Main extends App {
   }
 
   def evalRPP(): Unit = {
-    println(s"Running RPP on dir: $rppExtracted")
+    println(s"Using RPP tagged files: $rppExtracted")
     println(s"Using metadata: $aclMetadata")
     println(s"Using edges: $aclCitationEdges")
     println(s"Using whitelist: $aclIdWhiteList")
