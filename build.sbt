@@ -14,6 +14,8 @@ packageArchetype.java_application
 
 scalaVersion := "2.11.5"
 
+resolvers += "IESL Snapshots" at "https://dev-iesl.cs.umass.edu/nexus/content/repositories/snapshots"
+
 libraryDependencies ++= Seq(
   CoreDependencies.allenAiCommon,
   CoreDependencies.allenAiTestkit % "test",
@@ -23,10 +25,14 @@ libraryDependencies += "org.jsoup" % "jsoup" % "1.8.1"
 
 libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test"
 
+// for iesl eval stuff
+libraryDependencies += "cc.factorie" % "factorie_2.11" % "1.2-SNAPSHOT"
 
 dependencyOverrides ++= Set(
   "com.typesafe" % "config" % "1.2.1"
 )
+
+conflictManager := ConflictManager.latestRevision
 
 PublishTo.ai2Public
 
